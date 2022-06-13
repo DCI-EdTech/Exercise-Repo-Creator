@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 require("dotenv").config();
 const { Octokit } = require("@octokit/rest");
 const globy = require("globy");
