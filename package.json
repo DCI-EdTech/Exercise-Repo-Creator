@@ -1,0 +1,23 @@
+{
+    "name": "exercise-repo-creator",
+    "version": "0.0.1",
+    "description": "Automates the process of creating an exercise repository in the DCI GitHub organisation",
+    "main": "index.js",
+    "scripts": {
+      "postinstall": "./scripts/postinstall.sh"
+    },
+    "author": {
+        "name": "Carlo Trimarchi",
+        "email": "carlo.trimarchi@gmail.com",
+        "url": "https://github.com/carlotrimarchi/"
+      },
+    "license":"GNU GPL v3.0",
+    "dependencies": {
+      "@octokit/rest": "^18.12.0",
+      "dotenv": "^16.0.1",
+      "fs-extra": "^10.1.0",
+      "globy": "^0.1.8",
+      "path": "^0.12.7"
+    }
+  }
+  
