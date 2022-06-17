@@ -3,9 +3,7 @@
     "version": "0.0.1",
     "description": "Automates the process of creating an exercise repository in the DCI GitHub organisation",
     "main": "index.js",
-    "scripts": {
-        "postinstall": "scripts/postinstall.sh"
-    },
+    "scripts": {},
     "bin": {
         "exercise-repo-creator": "index.js"
     },

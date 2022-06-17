@@ -262,9 +262,6 @@ async function addTeamPermissions(repo, org) {
   }
 }
 
-// const owner = process.argv[2];
-// const repoName = process.argv[3];
-
 async function getUser() {
   return await octokit.rest.users.getAuthenticated();
 }
