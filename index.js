@@ -296,6 +296,7 @@ function createBlobForFile(repo, org) {
 }
 
 async function start(repoName, org) {
+  validateFolder(repoName);
   let repo = await createRepo(repoName, org);
   await protectBranch(repo, org);
   await createIssue(repo, org);
@@ -313,7 +314,7 @@ start(repoName, org);
 
 function printInstructions() {
   console.log(
-  `In order to use this script you need a GitHub Personal Access Token:
+    `In order to use this script you need a GitHub Personal Access Token:
   
 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token 
 
@@ -327,5 +328,46 @@ IMPORTANT:
 If you want to store the token permanently, you can add the command above at the end of the file ~/.profile (Bash) or ~/.zprofile (zsh).
 
 For further instructions refer to README file
-  `);
+  `
+  );
+}
+
+/**
+ *
+ * Check if both folders "main" and "solution" exist
+ */
+function containsMainSolutionFolders() {
+  return fs.existsSync("main") && fs.existsSync("solution");
+}
+
+function validateFolder(repoName) {
+  const modules = ["BDL", "UIB", "PB", "SPA", "BE"];
+  const repoNameSplit = repoName.split("-");
+
+  // does the folder name starts with a valid module shorthand?
+  if (!modules.includes(repoNameSplit[0])) {
+    return false;
+  }
+
+  // a repo name should contain at least 3 parts separated by dashes:
+  // moduleName-subModuleName-exerciseName
+  if (repoNameSplit.length < 3) {
+    return false;
+  }
+  return true;
+}
+
+function validateFolder() {
+  if (!containsMainSolutionFolders()) {
+    console.log(`
+The main folder should contain 2 folders named "main" and "solution".
+
+Refer to the README file for further explanations.
+`);
+    process.exit();
+  }
+
+  if (!validRepoName()) {
+    process.exit();
+  }
 }
