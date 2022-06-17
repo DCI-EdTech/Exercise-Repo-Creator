@@ -122,7 +122,6 @@ async function uploadToRepo(folder, repo, org) {
       branch: folder,
     });
   } catch (e) {
-    console.log("BRANCH");
     console.log(e);
   }
 
@@ -367,7 +366,7 @@ Refer to the README file for further explanations.
     process.exit();
   }
 
-  if (!isRepoNameValid()) {
+  if (!isRepoNameValid(repoName)) {
     process.exit();
   }
 }
