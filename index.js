@@ -1,17 +1,21 @@
 #! /usr/bin/env node
 
-require("dotenv").config();
 const { Octokit } = require("@octokit/rest");
 const globy = require("globy");
 const fs = require("fs-extra");
 const path = require("path");
 
-const token = process.env.token;
+const githubPAT = process.env.GITHUB_PAT;
 let octokit = null;
+
+if (!githubPAT) {
+  printInstructions();
+  process.exit();
+}
 
 try {
   octokit = new Octokit({
-    auth: token,
+    auth: githubPAT,
   });
 } catch (e) {
   console.log(e);
@@ -258,7 +262,6 @@ async function addTeamPermissions(repo, org) {
   }
 }
 
-
 // const owner = process.argv[2];
 // const repoName = process.argv[3];
 
@@ -310,3 +313,22 @@ const org = orgName();
 const repoName = currentFolder();
 
 start(repoName, org);
+
+function printInstructions() {
+  console.log(
+  `In order to use this script you need a GitHub Personal Access Token:
+  
+https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token 
+
+If your shell is bash or zsh, just run this command:
+
+export GITHUB_PAT=123abc
+
+Replace "123abc" with the correct GitHub token.
+
+IMPORTANT:
+If you want to store the token permanently, you can add the command above at the end of the file ~/.profile (Bash) or ~/.zprofile (zsh).
+
+For further instructions refer to README file
+  `);
+}
