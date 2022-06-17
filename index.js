@@ -340,7 +340,7 @@ function containsMainSolutionFolders() {
   return fs.existsSync("main") && fs.existsSync("solution");
 }
 
-function validateFolder(repoName) {
+function isRepoNameValid(repoName) {
   const modules = ["BDL", "UIB", "PB", "SPA", "BE"];
   const repoNameSplit = repoName.split("-");
 
@@ -367,7 +367,7 @@ Refer to the README file for further explanations.
     process.exit();
   }
 
-  if (!validRepoName()) {
+  if (!isRepoNameValid()) {
     process.exit();
   }
 }
