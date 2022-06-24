@@ -367,6 +367,11 @@ Refer to the README file for further explanations.
   }
 
   if (!isRepoNameValid(repoName)) {
+    console.log(`
+The repo takes the name from the folder and the folder doesn't follow the right conventions.
+
+Refer to the README file for further explanations.
+`)
     process.exit();
   }
 }
