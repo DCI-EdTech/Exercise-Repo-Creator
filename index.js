@@ -211,7 +211,8 @@ async function createIssue(repo, owner) {
       body: "I'm having a problem with this.",
     });
     await octokit.rest.projects.createCard({
-      column_id: 18829045,
+      //column_id: 18829045,
+      column_id: 18956398,
       content_id: codeBuddyIssue.data.id,
       content_type: "Issue",
     });
