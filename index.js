@@ -86,12 +86,17 @@ async function createTree(repo, org, blobs, paths, parentTreeSha) {
     sha,
   }));
 
-  const response = await octokit.rest.git.createTree({
-    owner: org,
-    repo: repo.data.name,
-    base_tree: parentTreeSha,
-    tree,
-  });
+  let response = null;
+  try {
+    response = await octokit.rest.git.createTree({
+      owner: org,
+      repo: repo.data.name,
+      base_tree: parentTreeSha,
+      tree,
+    });
+  } catch (e) {
+    console.log(e);
+  }
   return response.data;
 }
 
@@ -370,7 +375,7 @@ Refer to the README file for further explanations.
     console.log(`
 The repo takes the name from the folder and the folder doesn't follow the right conventions.
 
-`)
+`);
     process.exit();
   }
 }
