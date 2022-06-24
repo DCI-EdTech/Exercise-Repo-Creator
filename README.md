@@ -10,6 +10,30 @@ Automates the process of creating an exercise repository in the DCI GitHub organ
 npm install -g DCI-EdTech/exercise-repo-creator
 ```
 
+### GitHub Personal Access Token
+
+In order to use this script you need a GitHub Personal Access Token.
+  
+To obtain one, refer to the [this guide](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token 
+) from the official documentation.
+
+Once you've created a token, you should save it in an environment variable.
+
+If you are using the bash or zsh shells, just run this command:
+
+```plaintext
+export GITHUB_PAT=123abc
+```
+
+Replace `123abc` with the correct GitHub token.
+
+This command will store the token only for a single terminal session. If you want to store it permanently you have to add the `export` command above to one of the files below:
+
+- **bash**: add it to either `~/.bash_profile`, `~/.bash_login`, `~/.profile` 
+- **zsh**: `~/.zprofile` 
+
+If you use a different shell, refer to this [Unix StackExchange](https://unix.stackexchange.com/a/117470) answer.
+
 ### Usage
 
 After installing the package globally you should be able to run the script from anywhere in your system.
