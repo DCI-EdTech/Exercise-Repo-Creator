@@ -271,7 +271,7 @@ function currentFolder() {
 }
 
 function orgName() {
-  return process.argv[2] || "carlotrimarchi-test";
+  return process.argv[2] || "";
 }
 
 const getFileAsUTF8 = (filePath) => fs.readFile(filePath, "utf8");
@@ -370,7 +370,6 @@ Refer to the README file for further explanations.
     console.log(`
 The repo takes the name from the folder and the folder doesn't follow the right conventions.
 
-Refer to the README file for further explanations.
 `)
     process.exit();
   }
