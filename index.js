@@ -267,7 +267,6 @@ async function getUser() {
 
 function currentFolder() {
   const path = process.cwd().split("/");
-  console.log(path);
   return path[path.length - 1];
 }
 
