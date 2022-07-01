@@ -247,6 +247,7 @@ async function createIssue(repo, owner) {
   // https://github.com/carlotrimarchi-test/test-public/projects/1#column-18828863
 }
 async function protectBranch(repo, org) {
+  console.log("aaaaa");
   return await octokit.rest.repos.updateBranchProtection({
     owner: org,
     repo: repo.data.name,
