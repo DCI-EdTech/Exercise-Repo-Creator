@@ -208,7 +208,6 @@ async function updateRepo(name, org) {
 async function createRepo(name, org) {
   const repoExists = await doesRepoExist(name, org);
   if (!repoExists) {
-    console.log();
     return await octokit.rest.repos.createInOrg({
       org: org,
       name: name,
@@ -305,7 +304,6 @@ const getFileAsUTF8 = (filePath) => fs.readFile(filePath, "utf8");
 function createBlobForFile(repo, org) {
   return async function (filePath) {
     const content = await getFileAsUTF8(filePath);
-    console.log("content", content);
     let blobData = null;
     try {
       blobData = await octokit.rest.git.createBlob({
@@ -324,7 +322,6 @@ function createBlobForFile(repo, org) {
 async function start(repoName, org) {
   validateFolder(repoName);
   let repo = await createRepo(repoName, org);
-  console.log("repo", repo);
   await protectBranch(repo, org);
   await createIssue(repo, org);
   await addTeamPermissions(repo, org);
