@@ -234,11 +234,12 @@ async function createIssue(repo, owner) {
       body: "Add CodeBuddy",
     });
     await octokit.rest.projects.createCard({
-      column_id: 18987588,
+      column_id: 18987909,
       content_id: codeBuddyIssue.data.id,
       content_type: "Issue",
     });
   }
+  // carlo-test-org-3: 18987909
   // carlo-test-org-2: 18987588
   // carlo-test-org: 18956398
   // https://github.com/orgs/carlo-test-org/projects/3#column-18956398
@@ -247,7 +248,6 @@ async function createIssue(repo, owner) {
   // https://github.com/carlotrimarchi-test/test-public/projects/1#column-18828863
 }
 async function protectBranch(repo, org) {
-  console.log("aaaaa");
   return await octokit.rest.repos.updateBranchProtection({
     owner: org,
     repo: repo.data.name,
