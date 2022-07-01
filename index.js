@@ -234,11 +234,13 @@ async function createIssue(repo, owner) {
       body: "Add CodeBuddy",
     });
     await octokit.rest.projects.createCard({
-      column_id: 18987588,
+      column_id: 18956398,
       content_id: codeBuddyIssue.data.id,
       content_type: "Issue",
     });
   }
+  // carlo-test-org-2: 18987588
+  // carlo-test-org: 18956398
   // https://github.com/orgs/carlo-test-org/projects/3#column-18956398
   // https://api.github.com/projects/columns/{uniqueColumnId}/cards
   // Autograding Tests To do column: uniqueColumnId: 17098531
