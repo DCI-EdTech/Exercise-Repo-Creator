@@ -216,11 +216,12 @@ async function createIssue(repo, owner) {
       body: "I'm having a problem with this.",
     });
     await octokit.rest.projects.createCard({
-      column_id: 18829045,
+      column_id: 18956398,
       content_id: codeBuddyIssue.data.id,
       content_type: "Issue",
     });
   }
+  // https://github.com/orgs/carlo-test-org/projects/3#column-18956398
   // https://api.github.com/projects/columns/{uniqueColumnId}/cards
   // Autograding Tests To do column: uniqueColumnId: 17098531
   // https://github.com/carlotrimarchi-test/test-public/projects/1#column-18828863
