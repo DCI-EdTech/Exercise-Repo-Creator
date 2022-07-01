@@ -67,12 +67,18 @@ async function getBlobsData(folder, repo, org) {
     nofollow: false,
   };
   const filesPaths = globy.glob(`${folder}/**/*`, globOptions);
-  filesPaths.push('README.md');
+  filesPaths.push("README.md");
   console.log("filesPaths", filesPaths);
   const blobs = await Promise.all(filesPaths.map(createBlobForFile(repo, org)));
-  const blobsPaths = filesPaths.map((fullPath) =>
-    path.relative(folder, fullPath)
-  );
+  const blobsPaths = filesPaths.map((fullPath) => {
+    if (fullPath === "README.md") {
+      return path.relative("./", fullPath);
+    } else {
+      path.relative(folder, fullPath);
+    }
+  });
+
+  console.log("blobsPath", blobsPaths);
 
   return {
     blobs,
@@ -290,6 +296,7 @@ const getFileAsUTF8 = (filePath) => fs.readFile(filePath, "utf8");
 function createBlobForFile(repo, org) {
   return async function (filePath) {
     const content = await getFileAsUTF8(filePath);
+    console.log("content", content);
     let blobData = null;
     try {
       blobData = await octokit.rest.git.createBlob({
