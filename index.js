@@ -71,6 +71,12 @@ async function getBlobsData(folder, repo, org) {
   console.log("filesPaths", filesPaths);
   const blobs = await Promise.all(filesPaths.map(createBlobForFile(repo, org)));
   const blobsPaths = filesPaths.map((fullPath) => {
+    /**
+     * It seems that createTree doesn't work well with the relative path ../README.md
+     * 
+     * So instead of passing the path relative to the folder "main" or "solution" 
+     * I'm just passing it from the main folder
+     */
     if (fullPath === "README.md") {
       return path.relative("./", fullPath);
     } else {
@@ -128,6 +134,7 @@ async function uploadToRepo(folder, repo, org) {
   const { blobs, blobsPaths } = await getBlobsData(folder, repo, org);
   let branch = null;
   let currentCommit = null;
+  console.log(`Checking if the branch ${folder} exists...`)
   try {
     branch = await octokit.rest.repos.getBranch({
       owner: org,
@@ -135,7 +142,9 @@ async function uploadToRepo(folder, repo, org) {
       branch: folder,
     });
   } catch (e) {
-    console.log(e);
+    console.log(`\nThe branch ${folder} does not exist.`)
+    console.log(`Creating the branch ${folder}.`)
+    // console.log(e);
   }
 
   if (!branch) {
@@ -157,7 +166,7 @@ async function uploadToRepo(folder, repo, org) {
     blobsPaths,
     currentCommit.treeSha
   );
-  const commitMessage = `My commit message`;
+  const commitMessage = `Update branch`;
   const newCommit = await createCommit(
     repo,
     org,
