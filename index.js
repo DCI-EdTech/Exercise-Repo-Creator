@@ -68,6 +68,7 @@ async function getBlobsData(folder, repo, org) {
   };
   const filesPaths = globy.glob(`${folder}/**/*`, globOptions);
   filesPaths.push('./README.md');
+  console.log("filesPaths", filesPaths);
   const blobs = await Promise.all(filesPaths.map(createBlobForFile(repo, org)));
   const blobsPaths = filesPaths.map((fullPath) =>
     path.relative(folder, fullPath)
@@ -161,7 +162,7 @@ async function uploadToRepo(folder, repo, org) {
   await setBranchToCommit(repo, org, folder, newCommit.data.sha);
 }
 async function getRepo(name, owner) {
-  console.log(`Checking if repo ${owner / name} exists...`);
+  console.log(`Checking if repo ${owner}/${name} exists...`);
   try {
     // owner can be both a user or an organisation
     return await octokit.rest.repos.get({
@@ -169,7 +170,7 @@ async function getRepo(name, owner) {
       repo: name,
     });
   } catch (e) {
-    console.log(`Repo ${owner / name} does not exist.`);
+    console.log(`Repo ${owner}/${name} does not exist.`);
     return e;
   }
 }
