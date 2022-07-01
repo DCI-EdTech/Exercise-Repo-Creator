@@ -67,7 +67,7 @@ async function getBlobsData(folder, repo, org) {
     nofollow: false,
   };
   const filesPaths = globy.glob(`${folder}/**/*`, globOptions);
-  filesPaths.push('./README.md');
+  filesPaths.push('README.md');
   console.log("filesPaths", filesPaths);
   const blobs = await Promise.all(filesPaths.map(createBlobForFile(repo, org)));
   const blobsPaths = filesPaths.map((fullPath) =>
