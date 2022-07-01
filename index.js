@@ -68,13 +68,12 @@ async function getBlobsData(folder, repo, org) {
   };
   const filesPaths = globy.glob(`${folder}/**/*`, globOptions);
   filesPaths.push("README.md");
-  console.log("filesPaths", filesPaths);
   const blobs = await Promise.all(filesPaths.map(createBlobForFile(repo, org)));
   const blobsPaths = filesPaths.map((fullPath) => {
     /**
      * It seems that createTree doesn't work well with the relative path ../README.md
-     * 
-     * So instead of passing the path relative to the folder "main" or "solution" 
+     *
+     * So instead of passing the path relative to the folder "main" or "solution"
      * I'm just passing it from the main folder
      */
     if (fullPath === "README.md") {
@@ -83,8 +82,6 @@ async function getBlobsData(folder, repo, org) {
       path.relative(folder, fullPath);
     }
   });
-
-  console.log("blobsPath", blobsPaths);
 
   return {
     blobs,
@@ -134,7 +131,7 @@ async function uploadToRepo(folder, repo, org) {
   const { blobs, blobsPaths } = await getBlobsData(folder, repo, org);
   let branch = null;
   let currentCommit = null;
-  console.log(`Checking if the branch ${folder} exists...`)
+  console.log(`Checking if the branch ${folder} exists...`);
   try {
     branch = await octokit.rest.repos.getBranch({
       owner: org,
@@ -142,8 +139,8 @@ async function uploadToRepo(folder, repo, org) {
       branch: folder,
     });
   } catch (e) {
-    console.log(`\nThe branch ${folder} does not exist.`)
-    console.log(`Creating the branch ${folder}.`)
+    console.log(`\nThe branch ${folder} does not exist.`);
+    console.log(`Creating the branch ${folder}.`);
     // console.log(e);
   }
 
@@ -208,6 +205,7 @@ async function updateRepo(name, org) {
 async function createRepo(name, org) {
   const repoExists = await doesRepoExist(name, org);
   if (!repoExists) {
+    console.log(`Creating repositories ${name}...`);
     return await octokit.rest.repos.createInOrg({
       org: org,
       name: name,
@@ -216,6 +214,7 @@ async function createRepo(name, org) {
       // private: true,
     });
   }
+  console.log(`The repository ${name} exists already, updating it now...`);
   return await updateRepo(name, org);
 }
 
@@ -232,7 +231,7 @@ async function createIssue(repo, owner) {
       owner: owner,
       repo: repo.data.name,
       title: "Add CodeBuddy",
-      body: "I'm having a problem with this.",
+      body: "Add CodeBuddy",
     });
     await octokit.rest.projects.createCard({
       column_id: 18956398,
