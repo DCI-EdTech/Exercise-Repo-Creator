@@ -303,6 +303,7 @@ function createBlobForFile(repo, org) {
 async function start(repoName, org) {
   validateFolder(repoName);
   let repo = await createRepo(repoName, org);
+  console.log("repo", repo);
   await protectBranch(repo, org);
   await createIssue(repo, org);
   await addTeamPermissions(repo, org);
