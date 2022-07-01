@@ -66,11 +66,22 @@ async function getBlobsData(folder, repo, org) {
     nocase: false,
     nofollow: false,
   };
-  const filesPaths = globy.glob(`${folder}/**/*.*`, globOptions);
+  const filesPaths = globy.glob(`${folder}/**/*`, globOptions);
+  filesPaths.push("README.md");
   const blobs = await Promise.all(filesPaths.map(createBlobForFile(repo, org)));
-  const blobsPaths = filesPaths.map((fullPath) =>
-    path.relative(folder, fullPath)
-  );
+  const blobsPaths = filesPaths.map((fullPath) => {
+    /**
+     * It seems that createTree doesn't work well with the relative path ../README.md
+     *
+     * So instead of passing the path relative to the folder "main" or "solution"
+     * I'm just passing it from the main folder
+     */
+    if (fullPath === "README.md") {
+      return path.relative("./", fullPath);
+    } else {
+      path.relative(folder, fullPath);
+    }
+  });
 
   return {
     blobs,
@@ -86,12 +97,17 @@ async function createTree(repo, org, blobs, paths, parentTreeSha) {
     sha,
   }));
 
-  const response = await octokit.rest.git.createTree({
-    owner: org,
-    repo: repo.data.name,
-    base_tree: parentTreeSha,
-    tree,
-  });
+  let response = null;
+  try {
+    response = await octokit.rest.git.createTree({
+      owner: org,
+      repo: repo.data.name,
+      base_tree: parentTreeSha,
+      tree,
+    });
+  } catch (e) {
+    console.log(e);
+  }
   return response.data;
 }
 
@@ -115,6 +131,7 @@ async function uploadToRepo(folder, repo, org) {
   const { blobs, blobsPaths } = await getBlobsData(folder, repo, org);
   let branch = null;
   let currentCommit = null;
+  console.log(`Checking if the branch ${folder} exists...`);
   try {
     branch = await octokit.rest.repos.getBranch({
       owner: org,
@@ -122,7 +139,9 @@ async function uploadToRepo(folder, repo, org) {
       branch: folder,
     });
   } catch (e) {
-    console.log(e);
+    console.log(`\nThe branch ${folder} does not exist.`);
+    console.log(`Creating the branch ${folder}.`);
+    // console.log(e);
   }
 
   if (!branch) {
@@ -144,7 +163,7 @@ async function uploadToRepo(folder, repo, org) {
     blobsPaths,
     currentCommit.treeSha
   );
-  const commitMessage = `My commit message`;
+  const commitMessage = `Update branch`;
   const newCommit = await createCommit(
     repo,
     org,
@@ -155,14 +174,16 @@ async function uploadToRepo(folder, repo, org) {
   await setBranchToCommit(repo, org, folder, newCommit.data.sha);
 }
 async function getRepo(name, owner) {
+  console.log(`Checking if repo ${owner}/${name} exists...`);
   try {
     // owner can be both a user or an organisation
     return await octokit.rest.repos.get({
       owner: owner,
       repo: name,
     });
-  } catch (error) {
-    return error;
+  } catch (e) {
+    console.log(`Repo ${owner}/${name} does not exist.`);
+    return e;
   }
 }
 
@@ -184,6 +205,7 @@ async function updateRepo(name, org) {
 async function createRepo(name, org) {
   const repoExists = await doesRepoExist(name, org);
   if (!repoExists) {
+    console.log(`Creating repositories ${name}...`);
     return await octokit.rest.repos.createInOrg({
       org: org,
       name: name,
@@ -192,6 +214,7 @@ async function createRepo(name, org) {
       // private: true,
     });
   }
+  console.log(`The repository ${name} exists already, updating it now...`);
   return await updateRepo(name, org);
 }
 
@@ -208,14 +231,15 @@ async function createIssue(repo, owner) {
       owner: owner,
       repo: repo.data.name,
       title: "Add CodeBuddy",
-      body: "I'm having a problem with this.",
+      body: "Add CodeBuddy",
     });
     await octokit.rest.projects.createCard({
-      column_id: 18829045,
+      column_id: 18956398,
       content_id: codeBuddyIssue.data.id,
       content_type: "Issue",
     });
   }
+  // https://github.com/orgs/carlo-test-org/projects/3#column-18956398
   // https://api.github.com/projects/columns/{uniqueColumnId}/cards
   // Autograding Tests To do column: uniqueColumnId: 17098531
   // https://github.com/carlotrimarchi-test/test-public/projects/1#column-18828863
@@ -370,7 +394,7 @@ Refer to the README file for further explanations.
     console.log(`
 The repo takes the name from the folder and the folder doesn't follow the right conventions.
 
-`)
+`);
     process.exit();
   }
 }
