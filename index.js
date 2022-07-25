@@ -298,7 +298,7 @@ async function addTeamPermissions(repo, org) {
          * - https://docs.github.com/en/rest/teams#add-or-update-team-repository-permissions
          */
 
-         permission: "maintain",
+         permission: "push",
       });
     } catch (e) {
       console.log(e);
