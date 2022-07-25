@@ -349,7 +349,8 @@ async function start(repoName, org) {
 }
 const org = orgName();
 async function test() {
-  await getColumnId(org);
+  console.log(org);
+  let id = await getColumnId(org);
   console.log("after get columnid");
   process.exit();
 }
