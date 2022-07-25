@@ -351,8 +351,11 @@ const org = orgName();
 // the repository name comes from the folder we're in
 const repoName = currentFolder();
 
-getColumnId(org);
-process.exit();
+async function test() {
+  await getColumnId(org);
+  process.exit();
+}
+test();
 start(repoName, org);
 
 function printInstructions() {
