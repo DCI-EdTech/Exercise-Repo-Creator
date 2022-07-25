@@ -219,7 +219,7 @@ async function createRepo(name, org) {
   return await updateRepo(name, org);
 }
 
-async function getColumnId(owner) {
+async function getToDoColumnId(owner) {
   const projects = await octokit.rest.projects.listForOrg({
     org: owner,
   });
