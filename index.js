@@ -4,6 +4,7 @@ const { Octokit } = require("@octokit/rest");
 const globy = require("globy");
 const fs = require("fs-extra");
 const path = require("path");
+const { get } = require("http");
 
 const githubPAT = process.env.GITHUB_PAT;
 let octokit = null;
@@ -218,6 +219,22 @@ async function createRepo(name, org) {
   return await updateRepo(name, org);
 }
 
+async function getToDoColumnId(owner) {
+  const projects = await octokit.rest.projects.listForOrg({
+    org: owner,
+  });
+  const autogradingTestsProject = projects.data.find(
+    (project) => project.name === "Autograding Tests"
+  );
+  const projectColumns = await octokit.rest.projects.listColumns({
+    project_id: autogradingTestsProject.id,
+  });
+  const todoColumn = projectColumns.data.find(
+    (column) => (column.name = "To Do")
+  );
+  return todoColumn.id;
+}
+
 async function createIssue(repo, owner) {
   const issues = await octokit.rest.issues.listForRepo({
     owner: owner,
@@ -227,6 +244,7 @@ async function createIssue(repo, owner) {
     (issue) => issue.title === "Add CodeBuddy"
   );
   if (!codeBuddyIssue) {
+    const todoColumnId = await getToDoColumnId(owner);
     codeBuddyIssue = await octokit.rest.issues.create({
       owner: owner,
       repo: repo.data.name,
@@ -234,7 +252,7 @@ async function createIssue(repo, owner) {
       body: `@${owner}/curriculum-editors`,
     });
     await octokit.rest.projects.createCard({
-      column_id: 18956398,
+      column_id: todoColumnId,
       content_id: codeBuddyIssue.data.id,
       content_type: "Issue",
     });
@@ -333,6 +351,12 @@ async function start(repoName, org) {
   }
 }
 const org = orgName();
+// async function test() {
+//   console.log(org);
+//   let id = await getColumnId(org);
+//   process.exit();
+// }
+// test();
 // the repository name comes from the folder we're in
 const repoName = currentFolder();
 
