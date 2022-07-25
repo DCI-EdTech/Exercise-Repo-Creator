@@ -353,6 +353,7 @@ async function test() {
   process.exit();
 }
 test();
+console.log("after test");
 // the repository name comes from the folder we're in
 const repoName = currentFolder();
 
