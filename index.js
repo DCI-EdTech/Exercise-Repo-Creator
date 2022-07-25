@@ -348,14 +348,14 @@ async function start(repoName, org) {
   }
 }
 const org = orgName();
-// the repository name comes from the folder we're in
-const repoName = currentFolder();
-
 async function test() {
   await getColumnId(org);
   process.exit();
 }
 test();
+// the repository name comes from the folder we're in
+const repoName = currentFolder();
+
 start(repoName, org);
 
 function printInstructions() {
