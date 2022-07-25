@@ -220,6 +220,8 @@ async function createRepo(name, org) {
 }
 
 async function getColumnId(owner) {
+  console.log("Inside getColumnId");
+  console.log("owner", owner);
   const projects = await octokit.rest.projects.listForOrg({
     owner,
   });
