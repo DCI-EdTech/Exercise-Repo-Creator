@@ -229,12 +229,17 @@ async function getColumnId(owner) {
   console.log("projects");
   console.log(projects);
   console.log("--------------------");
-  const autogradingTestsProject = projects.data.find((project) => project.name === "test");
+  const autogradingTestsProject = projects.data.find(
+    (project) => project.name === "test"
+  );
   const projectColumns = await octokit.rest.projects.listColumns({
     project_id: autogradingTestsProject.id,
   });
+  const todoColumn = projectColumns.data.find(
+    (column) => (column.name = "To Do")
+  );
   // console.log(autogradingTestsProject);
-  console.log(projectColumns);
+  console.log(todoColumn);
 }
 
 async function createIssue(repo, owner) {
