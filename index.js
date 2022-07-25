@@ -355,9 +355,9 @@ async function test() {
 test();
 console.log("after test");
 // the repository name comes from the folder we're in
-const repoName = currentFolder();
+// const repoName = currentFolder();
 
-start(repoName, org);
+// start(repoName, org);
 
 function printInstructions() {
   console.log(
