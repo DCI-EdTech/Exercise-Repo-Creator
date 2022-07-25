@@ -229,7 +229,8 @@ async function getColumnId(owner) {
   console.log("projects");
   console.log(projects);
   console.log("--------------------");
-  // const autogradingTestsProject = projects.find(());
+  const autogradingTestsProject = projects.find((project) => project.name === "test");
+  console.log(autogradingTestsProject);
 }
 
 async function createIssue(repo, owner) {
