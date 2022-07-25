@@ -230,7 +230,7 @@ async function getColumnId(owner) {
   console.log(projects);
   console.log("--------------------");
   const autogradingTestsProject = projects.data.find((project) => project.name === "test");
-  const projectColumns = octokit.rest.projects.listColumns({
+  const projectColumns = await octokit.rest.projects.listColumns({
     project_id: autogradingTestsProject.id,
   });
   // console.log(autogradingTestsProject);
