@@ -4,6 +4,7 @@ const { Octokit } = require("@octokit/rest");
 const globy = require("globy");
 const fs = require("fs-extra");
 const path = require("path");
+const { get } = require("http");
 
 const githubPAT = process.env.GITHUB_PAT;
 let octokit = null;
@@ -218,6 +219,17 @@ async function createRepo(name, org) {
   return await updateRepo(name, org);
 }
 
+async function getColumnId(owner) {
+  const projects = await octokit.rest.projects.listForOrg({
+    owner,
+  });
+  console.log("--------------------");
+  console.log("projects");
+  console.log(projects);
+  console.log("--------------------");
+  // const autogradingTestsProject = projects.find(());
+}
+
 async function createIssue(repo, owner) {
   const issues = await octokit.rest.issues.listForRepo({
     owner: owner,
@@ -227,6 +239,7 @@ async function createIssue(repo, owner) {
     (issue) => issue.title === "Add CodeBuddy"
   );
   if (!codeBuddyIssue) {
+    const columnId = await getColumnId(owner);
     codeBuddyIssue = await octokit.rest.issues.create({
       owner: owner,
       repo: repo.data.name,
@@ -336,6 +349,8 @@ const org = orgName();
 // the repository name comes from the folder we're in
 const repoName = currentFolder();
 
+getColumnId(org);
+process.exit();
 start(repoName, org);
 
 function printInstructions() {
