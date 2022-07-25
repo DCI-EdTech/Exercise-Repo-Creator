@@ -223,7 +223,7 @@ async function getColumnId(owner) {
   console.log("Inside getColumnId");
   console.log("owner", owner);
   const projects = await octokit.rest.projects.listForOrg({
-    owner,
+    org: owner,
   });
   console.log("--------------------");
   console.log("projects");
