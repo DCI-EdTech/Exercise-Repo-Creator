@@ -231,7 +231,7 @@ async function createIssue(repo, owner) {
       owner: owner,
       repo: repo.data.name,
       title: "Add CodeBuddy",
-      body: "@curriculum-editors",
+      body: `@${owner}/curriculum-editors`,
     });
     await octokit.rest.projects.createCard({
       column_id: 18956398,
