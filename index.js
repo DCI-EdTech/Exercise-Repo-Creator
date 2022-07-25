@@ -220,15 +220,9 @@ async function createRepo(name, org) {
 }
 
 async function getColumnId(owner) {
-  console.log("Inside getColumnId");
-  console.log("owner", owner);
   const projects = await octokit.rest.projects.listForOrg({
     org: owner,
   });
-  console.log("--------------------");
-  console.log("projects");
-  console.log(projects);
-  console.log("--------------------");
   const autogradingTestsProject = projects.data.find(
     (project) => project.name === "test"
   );
@@ -238,8 +232,7 @@ async function getColumnId(owner) {
   const todoColumn = projectColumns.data.find(
     (column) => (column.name = "To Do")
   );
-  // console.log(autogradingTestsProject);
-  console.log(todoColumn);
+  return todoColumn.id;
 }
 
 async function createIssue(repo, owner) {
@@ -251,7 +244,7 @@ async function createIssue(repo, owner) {
     (issue) => issue.title === "Add CodeBuddy"
   );
   if (!codeBuddyIssue) {
-    const columnId = await getColumnId(owner);
+    const todoColumnId = await getToDoColumnId(owner);
     codeBuddyIssue = await octokit.rest.issues.create({
       owner: owner,
       repo: repo.data.name,
@@ -259,7 +252,7 @@ async function createIssue(repo, owner) {
       body: `@${owner}/curriculum-editors`,
     });
     await octokit.rest.projects.createCard({
-      column_id: 18956398,
+      column_id: todoColumnId,
       content_id: codeBuddyIssue.data.id,
       content_type: "Issue",
     });
@@ -358,17 +351,16 @@ async function start(repoName, org) {
   }
 }
 const org = orgName();
-async function test() {
-  console.log(org);
-  let id = await getColumnId(org);
-  process.exit();
-}
-test();
-console.log("after test");
+// async function test() {
+//   console.log(org);
+//   let id = await getColumnId(org);
+//   process.exit();
+// }
+// test();
 // the repository name comes from the folder we're in
-// const repoName = currentFolder();
+const repoName = currentFolder();
 
-// start(repoName, org);
+start(repoName, org);
 
 function printInstructions() {
   console.log(
