@@ -236,7 +236,7 @@ async function getToDoColumnId(owner) {
     project_id: autogradingTestsProject.id,
   });
   const todoColumn = projectColumns.data.find(
-    (column) => (column.name = "To Do")
+    (column) => (column.name.toLowerCase() = "to do")
   );
   return todoColumn.id;
 }
