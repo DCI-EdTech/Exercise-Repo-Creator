@@ -82,7 +82,7 @@ async function getBlobsData(folder, repo, org) {
     if (fullPath === "README.md") {
       return path.relative("./", fullPath);
     } else {
-      path.relative(folder, fullPath);
+      return path.relative(folder, fullPath);
     }
   });
   console.log("blobspath", blobsPaths);
