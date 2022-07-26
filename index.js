@@ -336,9 +336,11 @@ async function start(repoName, org) {
   let repo = await createRepo(repoName, org);
   console.log("Repo created");
   await protectBranch(repo, org);
+  console.log("Protected branch");
   await createIssue(repo, org);
   await addTeamPermissions(repo, org);
   const branchesToUpload = ["main", "solution"];
+  console.log("before loop");
   for (const branch of branchesToUpload) {
     await uploadToRepo(branch, repo, org);
   }
