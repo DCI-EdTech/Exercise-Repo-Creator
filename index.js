@@ -353,7 +353,7 @@ async function start(repoName, org) {
 }
 const org = orgName();
 
-isPrivate = argv[3] === "public" ? false : true;
+isPrivate = process.argv[3] === "public" ? false : true;
 
 // async function test() {
 //   console.log(org);
