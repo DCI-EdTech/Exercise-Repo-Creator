@@ -198,7 +198,7 @@ async function updateRepo(name, org) {
     owner: org,
     repo: name,
     auto_init: true,
-    // private: true,
+    private: true,
     is_template: true,
   });
 }
@@ -212,7 +212,7 @@ async function createRepo(name, org) {
       name: name,
       auto_init: true,
       is_template: true,
-      // private: true,
+      private: true,
     });
   }
   console.log(`The repository ${name} exists already, updating it now...`);
