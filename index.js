@@ -266,6 +266,7 @@ async function createIssue(repo, owner) {
   // https://github.com/carlotrimarchi-test/test-public/projects/1#column-18828863
 }
 async function protectBranch(repo, org) {
+  console.log("Add branch protection rules...")
   return await octokit.rest.repos.updateBranchProtection({
     owner: org,
     repo: repo.data.name,
@@ -332,6 +333,7 @@ function createBlobForFile(repo, org) {
 async function start(repoName, org) {
   validateFolder(repoName);
   let repo = await createRepo(repoName, org);
+  console.log("Repo created");
   await protectBranch(repo, org);
   await createIssue(repo, org);
   await addTeamPermissions(repo, org);
