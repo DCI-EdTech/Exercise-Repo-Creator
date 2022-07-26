@@ -288,17 +288,7 @@ async function addTeamPermissions(repo, org) {
         team_slug: team,
         owner: repo.data.owner.login,
         repo: repo.data.name,
-        /**
-         * TODO: is it possible that permission write works only on an Enterprise
-         * GitHub account?
-         *
-         * I tested it on a test organization I created with my account and I get a "Validation failed" error
-         *
-         * - https://octokit.github.io/rest.js/v18#teams-add-or-update-repo-permissions-in-org
-         * - https://docs.github.com/en/rest/teams#add-or-update-team-repository-permissions
-         */
-
-        // permission: "write",
+        permission: "push",
       });
     } catch (e) {
       console.log(e);
