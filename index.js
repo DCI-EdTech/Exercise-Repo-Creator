@@ -8,6 +8,7 @@ const { get } = require("http");
 
 const githubPAT = process.env.GITHUB_PAT;
 let octokit = null;
+let isPrivate = true;
 
 if (!githubPAT) {
   printInstructions();
@@ -204,7 +205,7 @@ async function updateRepo(name, org) {
     owner: org,
     repo: name,
     auto_init: true,
-    private: true,
+    private: isPrivate,
     is_template: true,
   });
 }
@@ -218,7 +219,7 @@ async function createRepo(name, org) {
       name: name,
       auto_init: true,
       is_template: true,
-      private: true,
+      private: isPrivate,
     });
   }
   console.log(`The repository ${name} exists already, updating it now...`);
@@ -236,7 +237,7 @@ async function getToDoColumnId(owner) {
     project_id: autogradingTestsProject.id,
   });
   const todoColumn = projectColumns.data.find(
-    (column) => (column.name.toLowerCase() === "to do")
+    (column) => column.name.toLowerCase() === "to do"
   );
   return todoColumn.id;
 }
@@ -351,6 +352,9 @@ async function start(repoName, org) {
   }
 }
 const org = orgName();
+
+isPrivate = argv[3] === "public" ? false : true;
+
 // async function test() {
 //   console.log(org);
 //   let id = await getColumnId(org);
