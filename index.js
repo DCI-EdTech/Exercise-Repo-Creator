@@ -194,6 +194,7 @@ async function doesRepoExist(name, owner) {
 }
 
 async function updateRepo(name, org) {
+  console.log("Update repo");
   return await octokit.rest.repos.update({
     owner: org,
     repo: name,
@@ -266,7 +267,7 @@ async function createIssue(repo, owner) {
   // https://github.com/carlotrimarchi-test/test-public/projects/1#column-18828863
 }
 async function protectBranch(repo, org) {
-  console.log("Add branch protection rules...")
+  console.log("Add branch protection rules...");
   return await octokit.rest.repos.updateBranchProtection({
     owner: org,
     repo: repo.data.name,
