@@ -78,12 +78,14 @@ async function getBlobsData(folder, repo, org) {
      * So instead of passing the path relative to the folder "main" or "solution"
      * I'm just passing it from the main folder
      */
+
     if (fullPath === "README.md") {
       return path.relative("./", fullPath);
     } else {
       path.relative(folder, fullPath);
     }
   });
+  console.log("blobspath", blobsPaths);
 
   return {
     blobs,
