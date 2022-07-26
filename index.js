@@ -71,7 +71,9 @@ async function getBlobsData(folder, repo, org) {
   const paths = globy.glob(`${folder}/**/*`, globOptions);
   // filter out directories
   const filesPaths = paths.filter((path) => fs.lstatSync(path).isFile());
-  console.log(filesPaths);
+  console.log("filesPaths", filesPaths);
+  const exerciseFiles = globy.glob(`${folder}/**/*`, globOptions);
+  console.log("exercise files", exerciseFiles);
   filesPaths.push("README.md");
   const blobs = await Promise.all(filesPaths.map(createBlobForFile(repo, org)));
   const blobsPaths = filesPaths.map((fullPath) => {
