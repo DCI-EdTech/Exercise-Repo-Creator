@@ -320,7 +320,7 @@ function orgName() {
   return process.argv[2] || "";
 }
 
-const getFileContent = (filePath) => fs.readFile(filePath, encoding);
+const getFileContent = (filePath, encoding) => fs.readFile(filePath, encoding);
 
 function createBlobForFile(repo, org) {
   return async function (filePath) {
