@@ -4,6 +4,7 @@ const { Octokit } = require("@octokit/rest");
 const globy = require("globy");
 const fs = require("fs-extra");
 const path = require("path");
+const { isText, isBinary, getEncoding } = require("istextorbinary");
 const { get } = require("http");
 
 const githubPAT = process.env.GITHUB_PAT;
@@ -319,18 +320,19 @@ function orgName() {
   return process.argv[2] || "";
 }
 
-const getFileAsUTF8 = (filePath) => fs.readFile(filePath, "utf8");
+const getFileContent = (filePath) => fs.readFile(filePath, encoding);
 
 function createBlobForFile(repo, org) {
   return async function (filePath) {
-    const content = await getFileAsUTF8(filePath);
+    const encoding = isBinary(filePath) ? "base64" : "utf8";
+    const content = getFileContent(filePath, encoding);
     let blobData = null;
     try {
       blobData = await octokit.rest.git.createBlob({
         owner: org,
         repo: repo.data.name,
         content,
-        encoding: "utf-8",
+        encoding: encoding === "utf8" ? "utf-8" : encoding,
       });
     } catch (e) {
       console.log(e);

@@ -18,6 +18,7 @@
         "dotenv": "^16.0.1",
         "fs-extra": "^10.1.0",
         "globy": "^0.1.8",
+        "istextorbinary": "^6.0.0",
         "path": "^0.12.7"
     }
 }
