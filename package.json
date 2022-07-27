@@ -1,6 +1,6 @@
 {
     "name": "exercise-repo-creator",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "description": "Automates the process of creating an exercise repository in the DCI GitHub organisation",
     "main": "index.js",
     "scripts": {},
