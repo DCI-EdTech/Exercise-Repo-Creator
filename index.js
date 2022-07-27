@@ -4,10 +4,12 @@ const { Octokit } = require("@octokit/rest");
 const globy = require("globy");
 const fs = require("fs-extra");
 const path = require("path");
+const { isText, isBinary, getEncoding } = require("istextorbinary");
 const { get } = require("http");
 
 const githubPAT = process.env.GITHUB_PAT;
 let octokit = null;
+let isPrivate = true;
 
 if (!githubPAT) {
   printInstructions();
@@ -67,8 +69,13 @@ async function getBlobsData(folder, repo, org) {
     nocase: false,
     nofollow: false,
   };
-  const filesPaths = globy.glob(`${folder}/**/*`, globOptions);
-  filesPaths.push("README.md");
+  const paths = globy.glob(`${folder}/**/*`, globOptions);
+  // filter out directories
+  const filesPaths = paths.filter((path) => fs.lstatSync(path).isFile());
+  console.log("filesPaths", filesPaths);
+  const exerciseFiles = globy.glob(`./*`, globOptions);
+  // console.log("exercise files", exerciseFiles);
+  // filesPaths.push("README.md");
   const blobs = await Promise.all(filesPaths.map(createBlobForFile(repo, org)));
   const blobsPaths = filesPaths.map((fullPath) => {
     /**
@@ -77,12 +84,14 @@ async function getBlobsData(folder, repo, org) {
      * So instead of passing the path relative to the folder "main" or "solution"
      * I'm just passing it from the main folder
      */
+
     if (fullPath === "README.md") {
       return path.relative("./", fullPath);
     } else {
-      path.relative(folder, fullPath);
+      return path.relative(folder, fullPath);
     }
   });
+  console.log("blobspath", blobsPaths);
 
   return {
     blobs,
@@ -194,11 +203,12 @@ async function doesRepoExist(name, owner) {
 }
 
 async function updateRepo(name, org) {
+  console.log("Update repo");
   return await octokit.rest.repos.update({
     owner: org,
     repo: name,
     auto_init: true,
-    private: true,
+    private: isPrivate,
     is_template: true,
   });
 }
@@ -212,7 +222,7 @@ async function createRepo(name, org) {
       name: name,
       auto_init: true,
       is_template: true,
-      private: true,
+      private: isPrivate,
     });
   }
   console.log(`The repository ${name} exists already, updating it now...`);
@@ -230,7 +240,7 @@ async function getToDoColumnId(owner) {
     project_id: autogradingTestsProject.id,
   });
   const todoColumn = projectColumns.data.find(
-    (column) => (column.name = "To Do")
+    (column) => column.name.toLowerCase() === "to do"
   );
   return todoColumn.id;
 }
@@ -266,6 +276,7 @@ async function createIssue(repo, owner) {
   // https://github.com/carlotrimarchi-test/test-public/projects/1#column-18828863
 }
 async function protectBranch(repo, org) {
+  console.log("Add branch protection rules...");
   return await octokit.rest.repos.updateBranchProtection({
     owner: org,
     repo: repo.data.name,
@@ -309,18 +320,23 @@ function orgName() {
   return process.argv[2] || "";
 }
 
-const getFileAsUTF8 = (filePath) => fs.readFile(filePath, "utf8");
+const getFileContent = (filePath, encoding) => fs.readFileSync(filePath, encoding);
 
 function createBlobForFile(repo, org) {
   return async function (filePath) {
-    const content = await getFileAsUTF8(filePath);
+    const encoding = isBinary(filePath) ? "base64" : "utf8";
+    const content = getFileContent(filePath, encoding);
     let blobData = null;
     try {
       blobData = await octokit.rest.git.createBlob({
         owner: org,
         repo: repo.data.name,
         content,
-        encoding: "utf-8",
+        /* 
+          the fs.readFileSync used above seems to require "utf8" to be written without the dash,
+          but the octokit function createBlob needs the dash 
+        */
+        encoding: encoding === "utf8" ? "utf-8" : encoding,
       });
     } catch (e) {
       console.log(e);
@@ -332,15 +348,21 @@ function createBlobForFile(repo, org) {
 async function start(repoName, org) {
   validateFolder(repoName);
   let repo = await createRepo(repoName, org);
+  console.log("Repo created");
   await protectBranch(repo, org);
+  console.log("Protected branch");
   await createIssue(repo, org);
   await addTeamPermissions(repo, org);
   const branchesToUpload = ["main", "solution"];
+  console.log("before loop");
   for (const branch of branchesToUpload) {
     await uploadToRepo(branch, repo, org);
   }
 }
 const org = orgName();
+
+isPrivate = process.argv[3] === "public" ? false : true;
+
 // async function test() {
 //   console.log(org);
 //   let id = await getColumnId(org);
