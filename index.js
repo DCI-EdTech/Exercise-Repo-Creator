@@ -332,6 +332,10 @@ function createBlobForFile(repo, org) {
         owner: org,
         repo: repo.data.name,
         content,
+        /* 
+          the fs.readFileSync used above seems to require "utf8" to be written without the dash,
+          but the octokit function createBlob needs the dash 
+        */
         encoding: encoding === "utf8" ? "utf-8" : encoding,
       });
     } catch (e) {
