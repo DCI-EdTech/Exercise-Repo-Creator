@@ -51,6 +51,7 @@ The structure for an `exercise folder` is the following:
 ```plaintext
 PB-language-variables/
     main/
+        README.md
         task-1.js
         task-2.js
         task-3.js
@@ -58,17 +59,18 @@ PB-language-variables/
         task-1.js
         task-2.js
         task-3.js
-    README.md
 ```
 
 The exercise folder needs to be named as the repository you want to create and it should follow DCI's conventions, specifically:
 
-- start with the acronym for a module: BDL, UIB, PB, SPA, BE
+- start with the acronym for a module: `BDL`, `UIB`, `PB`, `SPA`, `BE`
 - follow that with the submodule name
 - and than the name of the exercise itself
 - all separated by dashes
 
-Inside the folder there must be 2 other folders and a README.md file:
+Inside the folder there must be 2 other folders:
 
 - `main`: could be empty, or it can contain any file necessary to work on the exercise. The content of this folder will be pushed to the `main` branch
 - `solution`: should contain files with the exercise solution. The content of this folder will be pushed to the `solution` branch
+
+The `README.md` file and any other files necessary for the instructions should be in the `main` folder.
