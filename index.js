@@ -6,6 +6,7 @@ const fs = require("fs-extra");
 const path = require("path");
 const { isText, isBinary, getEncoding } = require("istextorbinary");
 const { get } = require("http");
+const { exit } = require("process");
 
 const githubPAT = process.env.GITHUB_PAT;
 let octokit = null;
@@ -229,37 +230,43 @@ async function createRepo(name, org) {
   return await updateRepo(name, org);
 }
 
-async function getToDoColumnId(owner) {
+async function getToDoColumnId(issue, owner) {
   const projects = await octokit.rest.projects.listForOrg({
     org: owner,
   });
-  const autogradingTestsProject = projects.data.find(
-    (project) => project.name === "Autograding Tests"
+  console.log("projects", projects);
+  console.log("issue", issue);
+  
+  const project = projects.data.find(
+    (project) => project.name.toLowerCase() === issue.projectName.toLowerCase()
   );
   const projectColumns = await octokit.rest.projects.listColumns({
-    project_id: autogradingTestsProject.id,
+    project_id: project.id,
   });
-  const todoColumn = projectColumns.data.find(
-    (column) => column.name.toLowerCase() === "to do"
+
+  const column = projectColumns.data.find(
+    (column) =>
+      column.name.trim().toLowerCase() === issue.columnName.toLowerCase()
   );
-  return todoColumn.id;
+  return column.id;
 }
 
-async function createIssue(repo, owner) {
-  const issues = await octokit.rest.issues.listForRepo({
+async function createIssue(issue, repo, owner) {
+  console.log(`create issue ${issue.title}`);
+  const existingIssues = await octokit.rest.issues.listForRepo({
     owner: owner,
     repo: repo.data.name,
   });
-  let codeBuddyIssue = issues.data.find(
-    (issue) => issue.title === "Add CodeBuddy"
+  let codeBuddyIssue = existingIssues.data.find(
+    (existingIssue) => existingIssue.title === issue.title
   );
   if (!codeBuddyIssue) {
-    const todoColumnId = await getToDoColumnId(owner);
+    const todoColumnId = await getToDoColumnId(issue, owner);
     codeBuddyIssue = await octokit.rest.issues.create({
       owner: owner,
       repo: repo.data.name,
-      title: "Add CodeBuddy",
-      body: `@${owner}/curriculum-editors`,
+      title: issue.title,
+      body: issue.body,
     });
     await octokit.rest.projects.createCard({
       column_id: todoColumnId,
@@ -267,13 +274,58 @@ async function createIssue(repo, owner) {
       content_type: "Issue",
     });
   }
-  // carlo-test-org-3: 18987909
-  // carlo-test-org-2: 18987588
-  // carlo-test-org: 18956398
-  // https://github.com/orgs/carlo-test-org/projects/3#column-18956398
-  // https://api.github.com/projects/columns/{uniqueColumnId}/cards
-  // Autograding Tests To do column: uniqueColumnId: 17098531
-  // https://github.com/carlotrimarchi-test/test-public/projects/1#column-18828863
+}
+
+function exerciseTitle() {
+  const readme = fs.readFileSync("main/README.md", "utf8");
+  const title = readme.match(/^#\s+.+/);
+  return title[0].replace("#", "").trim();
+}
+
+async function createIssues(repo, owner) {
+  const issues = [
+    {
+      title: "Review",
+      body: `
+## Checklist
+- [ ] the name of the repo follows the naming convention MODULE-submodule-exercise-name-
+- [ ] the instructions follow the [guidelines](https://digitalcareerinstitute.atlassian.net/wiki/spaces/WD/pages/69534288/Structured+Assignments)
+- [ ]
+@${owner}/curriculum-editors`,
+      projectName: "Creating materials",
+      columnName: "Needs review",
+    },
+    {
+      title: "Add CodeBuddy",
+      body: `@${owner}/curriculum-editors`,
+      projectName: "Autograding Tests",
+      columnName: "Pending",
+    },
+    {
+      title: "Add to README.md",
+      body: `
+\`\`\`
+#### ${exerciseTitle()} 
+
+> **When**: <content box title>
+>
+> **Time**: <time to complete>
+>
+> **Link**: ${repo.data.html_url}/tree/main
+>
+> **Solution**: ${repo.data.html_url}/tree/solution
+
+@${owner}/curriculum-editors
+\`\`\`
+      `,
+      projectName: "Creating materials",
+      columnName: "Needs review",
+    },
+  ];
+  for (const issue of issues) {
+    await createIssue(issue, repo, owner);
+  }
+
 }
 async function protectBranch(repo, org) {
   console.log("Add branch protection rules...");
@@ -320,7 +372,8 @@ function orgName() {
   return process.argv[2] || "";
 }
 
-const getFileContent = (filePath, encoding) => fs.readFileSync(filePath, encoding);
+const getFileContent = (filePath, encoding) =>
+  fs.readFileSync(filePath, encoding);
 
 function createBlobForFile(repo, org) {
   return async function (filePath) {
@@ -351,7 +404,7 @@ async function start(repoName, org) {
   console.log("Repo created");
   await protectBranch(repo, org);
   console.log("Protected branch");
-  await createIssue(repo, org);
+  await createIssues(repo, org);
   await addTeamPermissions(repo, org);
   const branchesToUpload = ["main", "solution"];
   console.log("before loop");
