@@ -295,12 +295,12 @@ async function createIssues(repo, owner) {
       projectName: "Creating materials",
       columnName: "Needs review",
     },
-    {
+    /*{
       title: "Add CodeBuddy",
       body: `@${owner}/curriculum-editors`,
       projectName: "Autograding Tests",
       columnName: "Pending",
-    },
+    },*/
     {
       title: "Add to README.md",
       body: `
